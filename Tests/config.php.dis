@@ -1,0 +1,4 @@
+<?php
+
+define("OVH_USER", "xxxxx-ovh");
+define("OVH_PASS", "123456");
