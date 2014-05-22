@@ -5,7 +5,7 @@
     "keywords": ["api", "ovh", "domains"],
     "homepage": "https://github.com/jlaso/ovh-domain-api.git",
     "type": "module",
-    "license": "propietary",
+    "license": "mit",
     "authors": [
         {
             "name": "Joseluis Laso",
