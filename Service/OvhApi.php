@@ -92,11 +92,14 @@ class OvhApi
 
     /**
      * @param OwnerDomain $ownerData
+     *
+     * @return string
      */
     public function createOwnerId(OwnerDomain $ownerData)
     {
         $result = $this->request('nicCreate', $ownerData->asArray());
-        var_dump($result); die;
+
+        return $result;
     }
 
     /**
