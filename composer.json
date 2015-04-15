@@ -1,6 +1,6 @@
 {
     "name": "jlaso/ovh-domain-api",
-    "version": "1.0.0",
+    "version": "1.1",
     "description": "Client API for ovh.com domain functions",
     "keywords": ["api", "ovh", "domains"],
     "homepage": "https://github.com/jlaso/ovh-domain-api.git",

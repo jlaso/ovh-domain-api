@@ -2,7 +2,6 @@
 
 namespace JLaso\OvhDomainApi\Service;
 
-
 class OwnerDomain
 {
     protected $name;
@@ -24,13 +23,12 @@ class OwnerDomain
     protected $legalNumber; // el número legal de contacto (CIF/NIF/...)
     protected $vat; // el n.IVA contacto
 
-    function __construct(
+    public function __construct(
         $email, $name, $firstname, $password,
         $address, $area, $city, $country, $zip,
         $phone, $fax,
         $organisation = '', $legalName = '', $legalNumber = '', $vat = '', $legalForm = 'individual'
-    )
-    {
+    ) {
         $this->address = $address;
         $this->area = $area;
         $this->city = $city;
@@ -49,7 +47,7 @@ class OwnerDomain
         $this->zip = $zip;
     }
 
-    function asArray()
+    public function asArray()
     {
         return array(
             'session'      => $this->session,         // ID de la sesión
@@ -361,8 +359,4 @@ class OwnerDomain
     {
         return $this->zip;
     }
-
-
-
-
 }

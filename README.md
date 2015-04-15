@@ -45,7 +45,8 @@ $isAvailable = $ovhApi->isAvailable("example.com");
 print ($isAvailable ? 'The domain is AVAILABLE' : 'The Domain is UNAVAILABLE');
 
 /**
- * To create an [ownerId](http://www.ovh.com/soapi/en/?method=nicCreate) (individual) to register domains in this account
+ * To create an [ownerId](http://www.ovh.com/soapi/en/?method=nicCreate) (individual) 
+ * to register domains in this account
  */
 $ownerId = $ovhApi->createOwnerId(new OwnerDomain(
     'email@example.com',
@@ -68,3 +69,6 @@ You can see the SimpleSample in the Example folder.
 
 
 More information in the page of [ovh](http://www.ovh.com/soapi/en/)
+=======
+
+
