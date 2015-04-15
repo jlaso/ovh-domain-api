@@ -8,6 +8,9 @@ class OvhApi
     const AVAILABLE     = 1;    // Domain is available
     const NOT_AVAILABLE = - 1;  // Domain is not available
 
+    const PRODUCTION_MODE = false;
+    const SANDBOX_MODE = true;
+
     /** @var string [User registered in OVH] */
     protected $username;
     /** @var string [Password to access OVH] */
@@ -27,10 +30,10 @@ class OvhApi
     /**
      * @param $user
      * @param $password
-     * @param bool $sandBoxMode
+     * @param bool   $sandBoxMode
      * @param string $language
      */
-    function __construct($user, $password, $sandBoxMode = true, $language = 'es')
+    public function __construct($user, $password, $sandBoxMode = true, $language = 'es')
     {
         $this->sandBoxMode = $sandBoxMode;
         $this->language = $language;
@@ -67,6 +70,40 @@ class OvhApi
     }
 
     /**
+     * @param $dnsIndex
+     * @param $dnsIP
+     * @return $this
+     * @throws \Exception
+     */
+    public function setDns($dnsIndex, $dnsIP)
+    {
+        if(!in_array($dnsIndex, array(1,2,3,4))){
+            throw new \Exception('dns index has to be between 1 and 4');
+        }
+        $this->accessData[sprintf('dns%d', $dnsIndex)] = $dnsIP;
+
+        return $this;
+    }
+
+    public static function doLogin($user, $password, $language = 'en')
+    {
+        $soap = new \SoapClient("https://www.ovh.com/soapi/soapi-re-1.56.wsdl");
+        try {
+            $session = $soap->login($user, $password, $language, false);
+        } catch (\Exception $e) {
+            return array(
+                'success' => false,
+                'reason' => $e->getMessage(),
+            );
+        }
+
+        return array(
+            'success' => true,
+            'session' => $session,
+        );
+    }
+
+    /**
      * @param string $domain
      *
      * @return int
@@ -77,11 +114,11 @@ class OvhApi
         $this->login();
         $results = $this->request('domainCheck', array($domain));
 
-        foreach($results as $result){
-            if($result->predicate == 'is_available'){
-                if($result->value){
+        foreach ($results as $result) {
+            if ($result->predicate == 'is_available') {
+                if ($result->value) {
                     return self::AVAILABLE;
-                }else{
+                } else {
                     return self::NOT_AVAILABLE;
                 }
             }
@@ -103,6 +140,29 @@ class OvhApi
     }
 
     /**
+     * @return array
+     * @throws \Exception
+     * @throws \SoapFault
+     */
+    public function accountSummary()
+    {
+        $obj = $this->request('accountSummary');
+
+        return array(
+            'nic' => $obj->nic,
+            'account' => $obj->account,
+            'country' => $obj->country,
+            'description' => $obj->description,
+            'balance' => $obj->balance,
+            'alertThreshold' => $obj->alertThreshold,
+            'limitThreshold' => $obj->limitThreshold,
+            'openDate' => $obj->openDate,
+            'date' => $obj->date,
+            'closeDate' => $obj->closeDate,
+        );
+    }
+
+    /**
      * @param string $domain
      * @param string $ownerId
      *
@@ -120,11 +180,11 @@ class OvhApi
     }
 
     /**
-     *  PROTECTED METHODS
+     *  PROTECTED METHODS.
      */
 
     /**
-     * logout in ovh
+     * logout in ovh.
      */
     protected function login()
     {
@@ -133,11 +193,11 @@ class OvhApi
     }
 
     /**
-     * logout in ovh
+     * logout in ovh.
      */
     protected function logout()
     {
-        if($this->soapClient && $this->session){
+        if ($this->soapClient && $this->session) {
             $this->soapClient->logout($this->session);
             $this->session = null;
         }
@@ -146,39 +206,34 @@ class OvhApi
     /**
      * @param $method
      * @param array $param
-     * @param bool $catchException
+     * @param bool  $catchException
      *
      * @return bool|mixed
+     *
      * @throws \Exception
      * @throws \SoapFault
      */
     protected function request($method, $param = array(), $catchException = true)
     {
-        if(!$this->session){
+        if (!$this->session) {
             $this->login();
         }
         $this->lastException = null;
-        try{
+        try {
 
             // add as first parameter the session
             array_unshift($param, $this->session);
             $response = call_user_func_array(array($this->soapClient, $method), $param);
-
-        }catch (\SoapFault $e){
-
-            if($catchException){
+        } catch (\SoapFault $e) {
+            if ($catchException) {
                 $this->lastException = $e;
 
                 return false;
-            }else{
+            } else {
                 throw $e;
             }
         }
 
         return $response;
     }
-
-
-
-
 }
