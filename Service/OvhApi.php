@@ -40,7 +40,7 @@ class OvhApi
         $this->password = $password;
         $this->username = $user;
         $this->accessData = array(
-            'hosting'          => 'start1m',
+            'hosting'          => 'none',
             'offer'            => 'gold',
             'profile'          => 'whiteLabel',
             'owo'              => 'no',
@@ -171,18 +171,8 @@ class OvhApi
     public function registerDomain($domain, $ownerId)
     {
         if ($this->isAvailable($domain)) {
-            // http://www.ovh.com/soapi/en/?method=resellerDomainCreate
-            $param = array(
-                $this->session,
-                $domain,
-                $this->accessData["hosting"],
-                $this->accessData["offer"],
-                $this->accessData["profile"],
-                $this->accessData["owo"],
-                $ownerId, $ownerId, $ownerId, $ownerId,
-                "", "", "", "", "", "", "", "", "", "", "", "", "", false, "", "", ""
-            );
-            call_user_func_array(array($this->soapClient, 'resellerDomainCreate'), $param);
+            $this->request('resellerDomainCreate', array($domain, 'owner' => $ownerId));
+
             return true;
         }
 
